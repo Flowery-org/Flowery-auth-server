@@ -82,11 +82,10 @@ class JwtProvider(
     }
 
     /**
-     * 유효한 JWT 토큰으로부터 JwtAuthentication 객체를 생성합니다
+     * 유효한 JWT 토큰으로부터 Authentication 객체를 생성합니다
      *
      * @param token 유효한 JWT 토큰
-     * @return 사용자명과 역할 정보를 포함한 JwtAuthentication 객체
-     * @throws JwtException 토큰이 유효하지 않거나 파싱할 수 없는 경우
+     * @return 사용자명과 역할 정보를 포함한 Authentication 객체
      */
     fun getAuthentication(token: String): Authentication {
         val claims = Jwts.parser()
