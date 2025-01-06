@@ -1,6 +1,5 @@
 package org.flowery.config
 
-import org.flowery.jwt.JwtProvider
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
