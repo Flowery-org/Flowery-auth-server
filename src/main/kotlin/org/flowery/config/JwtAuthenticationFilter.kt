@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.flowery.jwt.JwtProvider
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 
 /**
@@ -12,6 +13,7 @@ import org.springframework.web.filter.OncePerRequestFilter
  *
  * @param jwtProvider JWT 토큰 처리를 위한 유틸리티 클래스
  */
+@Component
 class JwtAuthenticationFilter(
     private val jwtProvider: JwtProvider,
 ) : OncePerRequestFilter() {
