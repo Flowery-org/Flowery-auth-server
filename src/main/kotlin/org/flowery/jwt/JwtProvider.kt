@@ -23,19 +23,17 @@ class JwtProvider(
     private val key: SecretKey by lazy { Keys.hmacShaKeyFor(secretKey.toByteArray()) }
 
     /**
-     * 주어진 사용자명과 역할 목록으로 새로운 JWT 토큰을 생성합니다
+     * 주어진 사용자명으로 새로운 JWT 토큰을 생성합니다
      *
      * @param username 사용자 식별자
-     * @param roles 사용자에게 할당된 역할 목록
      * @return 생성된 JWT 토큰 문자열
      */
-    fun createToken(username: String, roles: List<String>): String {
+    fun createToken(username: String): String {
         val now = Date()
         val validity = Date(now.time + validityInMilliseconds)
 
         return Jwts.builder()
             .subject(username)
-            .claim("roles", roles)
             .issuedAt(now)
             .expiration(validity)
             .signWith(key)
@@ -85,7 +83,7 @@ class JwtProvider(
      * 유효한 JWT 토큰으로부터 Authentication 객체를 생성합니다
      *
      * @param token 유효한 JWT 토큰
-     * @return 사용자명과 역할 정보를 포함한 Authentication 객체
+     * @return 사용자명과 기본 권한을 포함한 Authentication 객체
      */
     fun getAuthentication(token: String): Authentication {
         val claims = Jwts.parser()
@@ -95,14 +93,14 @@ class JwtProvider(
             .payload
 
         val username = claims.subject
-        @Suppress("UNCHECKED_CAST")
-        val roles = claims["roles"] as List<String>
-        val authorities = roles.map { SimpleGrantedAuthority(it) }
+
+        // 기본 권한 설정 (ROLE_USER)
+        val authorities = listOf(SimpleGrantedAuthority("ROLE_USER"))
 
         return UsernamePasswordAuthenticationToken(
-            /* principal = */ username,
-            /* credentials = */ null,
-            /* authorities = */ authorities
+            username,
+            null, // credentials
+            authorities
         )
     }
 
