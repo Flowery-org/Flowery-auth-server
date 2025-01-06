@@ -61,18 +61,12 @@ class JwtProvider(
      */
     fun validateToken(token: String): Boolean {
         return try {
-            val claims = Jwts.parser()
+            Jwts.parser()
                 .verifyWith(key)
                 .build()
                 .parseSignedClaims(token)
-            !claims.payload.expiration.before(Date())
-        } catch (e: SecurityException) {
-            false
-        } catch (e: MalformedJwtException) {
-            false
-        } catch (e: ExpiredJwtException) {
-            false
-        } catch (e: UnsupportedJwtException) {
+            true
+        } catch (e: JwtException) {
             false
         } catch (e: IllegalArgumentException) {
             false
