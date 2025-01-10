@@ -59,7 +59,7 @@ class AuthenticationController(
         @param emailVerificationDto 인증 코드 검증 DTO
         @return 인증 코드 검증 결과 응답
     */
-    @PostMapping("/verify")
+    @PostMapping("/verification")
     fun verifyCode(@RequestBody emailVerificationDto: EmailVerificationDto): String {
         return authService.verificationEmail(emailVerificationDto)
     }
