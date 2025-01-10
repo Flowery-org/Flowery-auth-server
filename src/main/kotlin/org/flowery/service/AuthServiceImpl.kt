@@ -53,16 +53,16 @@ class AuthServiceImpl(
     * */
     override fun sendEmailMessage(data: EmailSendDto): String {
         return try {
-            val ran6Number = (100000..999999).random().toString()
+            val randNum = (100000..999999).random().toString()
 
             // 인증 코드 저장 ( TTL : 5분 )
-            authRepository.saveAuthCode(data.useremail, ran6Number, 5)
+            authRepository.saveAuthCode(data.userEmail, randNum, 5)
 
             val message = SimpleMailMessage().apply {
                 setFrom("hyu.flowery@gmail.com")      // 호스트 이메일
-                setTo(data.useremail)                 // 클라이언트 이메일
+                setTo(data.userEmail)                 // 클라이언트 이메일
                 setSubject("[Flowery] 이메일 인증 코드")  // 메일 주제
-                setText("[인증코드] ${ran6Number}")      // 메일 메시지
+                setText("[인증코드] ${randNum}")      // 메일 메시지
             }
             emailSender.send(message)
             "Email sent successfully!"
@@ -79,12 +79,12 @@ class AuthServiceImpl(
     *
     * */
     override fun verificationEmail(data: EmailVerificationDto): String {
-        val savedCode = authRepository.getAuthCode(data.useremail) // redis에서 인증코드 조회
+        val savedCode = authRepository.getAuthCode(data.userEmail) // redis에서 인증코드 조회
 
         return if (savedCode == null){
             "Verification failed: No code found for this email."
-        } else if (data.usercode == savedCode){
-            authRepository.deleteAuthCode(data.useremail) // 인증 성공 후 인증 코드 삭제
+        } else if (data.userCode == savedCode){
+            authRepository.deleteAuthCode(data.userEmail) // 인증 성공 후 인증 코드 삭제
             "Verification successful!"
         }
         else {
