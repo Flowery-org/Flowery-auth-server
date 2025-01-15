@@ -26,14 +26,16 @@ class JwtProvider(
      * 주어진 사용자명으로 새로운 JWT 토큰을 생성합니다
      *
      * @param username 사용자 식별자
+     * @param role 사용자 역할
      * @return 생성된 JWT 토큰 문자열
      */
-    fun createToken(username: String): String {
+    fun createToken(username: String, roles: Set<String>): String {
         val now = Date()
         val validity = Date(now.time + validityInMilliseconds)
 
         return Jwts.builder()
             .subject(username)
+            .claim("roles", roles)
             .issuedAt(now)
             .expiration(validity)
             .signWith(key)
