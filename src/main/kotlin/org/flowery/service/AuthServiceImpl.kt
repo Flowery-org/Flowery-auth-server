@@ -36,8 +36,8 @@ class AuthServiceImpl(
         return if (user != null &&
             passwordEncoder.matches(loginRequestDto.password, user.passwordHash)
         ) {
-            val token = jwtProvider.createToken(user.username)
-            Mono.just(LoginResponseDto(token = token, username = user.username))
+            val token = jwtProvider.createToken(user.username, user.roles)
+            Mono.just(LoginResponseDto(token = token, username = user.username, roles = user.roles))
         } else {
             Mono.error(IllegalArgumentException("Invalid username or password"))
         }
