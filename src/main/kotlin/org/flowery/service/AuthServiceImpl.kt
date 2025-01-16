@@ -93,4 +93,14 @@ class AuthServiceImpl(
 
     }
 
+    /*
+    * 로그아웃 시 토큰을 블랙리스트에 올리기
+    *
+    * (JWTProvider에서 블랙리스트에 토큰을 추가)
+    * */
+    fun logout(token: String){
+        val remainingMills = 3600000L // 1시간 후 만료
+        jwtProvider.addToBlacklist(token, remainingMills)
+    }
+
 }
