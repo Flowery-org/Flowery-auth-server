@@ -36,8 +36,8 @@ class AuthServiceImpl(
         return if (user != null &&
             passwordEncoder.matches(loginRequestDto.password, user.passwordHash)
         ) {
-            val token = jwtProvider.createToken(user.username)
-            Mono.just(LoginResponseDto(token = token, username = user.username))
+            val token = jwtProvider.createToken(user.username, user.roles)
+            Mono.just(LoginResponseDto(token = token, username = user.username, roles = user.roles))
         } else {
             Mono.error(IllegalArgumentException("Invalid username or password"))
         }
@@ -91,6 +91,16 @@ class AuthServiceImpl(
             "Verification failed: Invalid code."
         }
 
+    }
+
+    /*
+    * 로그아웃 시 토큰을 블랙리스트에 올리기
+    *
+    * (JWTProvider에서 블랙리스트에 토큰을 추가)
+    * */
+    fun logout(token: String){
+        val remainingMills = 3600000L // 1시간 후 만료
+        jwtProvider.addToBlacklist(token, remainingMills)
     }
 
 }
