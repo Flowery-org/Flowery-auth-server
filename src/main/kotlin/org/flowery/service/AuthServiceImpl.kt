@@ -7,6 +7,7 @@ import org.flowery.dto.LoginResponseDto
 import org.flowery.jwt.JwtProvider
 import org.flowery.model.User
 import org.flowery.repository.AuthRepository
+import org.flowery.utils.PasswordValidator
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
@@ -22,6 +23,18 @@ class AuthServiceImpl(
     private val emailSender: JavaMailSender,
     private val authRepository: AuthRepository,
 ) : AuthService {
+
+    /**
+     * 패스워드 유효성을 검사합니다.
+     * @param password 검사할 패스워드
+     * @throws IllegalArgumentException 패스워드가 유효하지 않을 경우
+     */
+    private fun validatePassword(password: String) {
+        val validationResult = PasswordValidator.validate(password)
+        if (!validationResult.isValid) {
+            throw IllegalArgumentException(validationResult.errors.joinToString("\n"))
+        }
+    }
 
     /**
      * 로그인 요청을 처리하여 JWT 토큰을 생성하고 반환합니다.
