@@ -1,9 +1,6 @@
 package org.flowery.service
 
-import org.flowery.dto.EmailSendDto
-import org.flowery.dto.EmailVerificationDto
-import org.flowery.dto.LoginRequestDto
-import org.flowery.dto.LoginResponseDto
+import org.flowery.dto.*
 import org.flowery.jwt.JwtProvider
 import org.flowery.model.User
 import org.flowery.repository.AuthRepository
@@ -25,15 +22,28 @@ class AuthServiceImpl(
 ) : AuthService {
 
     /**
-     * 패스워드 유효성을 검사합니다.
-     * @param password 검사할 패스워드
-     * @throws IllegalArgumentException 패스워드가 유효하지 않을 경우
+     * 회원가입 요청을 처리하여 사용자 정보를 저장하고 반환합니다.
+     *
+     * @param signUpRequestDto 회원가입 요청 DTO
+     * @return 회원가입 응답 DTO를 포함한 Mono
      */
-    private fun validatePassword(password: String) {
-        val validationResult = PasswordValidator.validate(password)
-        if (!validationResult.isValid) {
-            throw IllegalArgumentException(validationResult.errors.joinToString("\n"))
-        }
+    override fun signUp(signUpRequestDto: SignUpRequestDto): Mono<SignUpResponseDto> {
+        // 패스워드 유효성 검사
+        validatePassword(signUpRequestDto.password)
+
+        // 패스워드 해싱
+        val passwordHash = passwordEncoder.encode(signUpRequestDto.password)
+
+        // 사용자 정보 저장
+        val user = User(
+            ident = signUpRequestDto.ident,
+            passwordHash = passwordHash,
+            name = signUpRequestDto.userName,
+            roles = setOf("ROLE_USER")
+        )
+        redisTemplate.opsForHash<String, Any>().put("users", user.ident, user)
+
+        return Mono.just(SignUpResponseDto(ident = user.ident, userName = user.name))
     }
 
     /**
@@ -114,6 +124,18 @@ class AuthServiceImpl(
     fun logout(token: String){
         val remainingMills = 3600000L // 1시간 후 만료
         jwtProvider.addToBlacklist(token, remainingMills)
+    }
+
+    /**
+     * 패스워드 유효성을 검사합니다.
+     * @param password 검사할 패스워드
+     * @throws IllegalArgumentException 패스워드가 유효하지 않을 경우
+     */
+    private fun validatePassword(password: String) {
+        val validationResult = PasswordValidator.validate(password)
+        if (!validationResult.isValid) {
+            throw IllegalArgumentException(validationResult.errors.joinToString("\n"))
+        }
     }
 
 }

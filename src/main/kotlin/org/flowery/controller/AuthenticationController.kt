@@ -1,10 +1,7 @@
 package org.flowery.controller
 
 import jakarta.servlet.http.HttpServletRequest
-import org.flowery.dto.EmailSendDto
-import org.flowery.dto.EmailVerificationDto
-import org.flowery.dto.LoginRequestDto
-import org.flowery.dto.LoginResponseDto
+import org.flowery.dto.*
 import org.flowery.service.AuthService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -22,23 +19,32 @@ class AuthenticationController(
     private val authService: AuthService
 ) {
 
+    @PostMapping("/sign-up")
+    fun signUp(@RequestBody @Validated signUpRequestDto: SignUpRequestDto): Mono<ResponseEntity<SignUpResponseDto>> {
+        return authService.signUp(signUpRequestDto)
+            .map { response ->
+                ResponseEntity.ok(response)
+            }
+            .onErrorResume { e ->
+                when (e) {
+                    is IllegalArgumentException -> Mono.just(ResponseEntity.badRequest().build())
+                    is IllegalStateException -> Mono.just(ResponseEntity.status(HttpStatus.CONFLICT).build())
+                    else -> Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build())
+                }
+            }
+    }
+
     /**
      * 로그인 엔드포인트
      *
      * @param loginRequestDto 로그인 요청 DTO
      * @return 로그인 응답 DTO를 포함한 ResponseEntity
-     *
-     * + serviceImpl에서 로그인 응답 받아올 경우 ident으로 Session 처리
      */
     @PostMapping("/user")
-    fun login(@RequestBody @Validated loginRequestDto: LoginRequestDto, request: HttpServletRequest): Mono<ResponseEntity<LoginResponseDto>> {
+    fun login(@RequestBody @Validated loginRequestDto: LoginRequestDto): Mono<ResponseEntity<LoginResponseDto>> {
         return authService.login(loginRequestDto)
             .map { response ->
-                // 세션 객체 생성
-                val session = request.getSession()
-                session.setAttribute("ident", response.ident)
-                session.setAttribute("roles", response.roles)   // 사용자 roles 저장
-                ResponseEntity.ok(response)
+                ResponseEntity.status(HttpStatus.OK).body(response)
             }
             .onErrorResume { e ->
                 when (e) {
