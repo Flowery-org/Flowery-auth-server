@@ -8,8 +8,6 @@ import reactor.core.publisher.Mono
 
 interface AuthService {
     fun login(loginRequestDto: LoginRequestDto): Mono<LoginResponseDto>
-
     fun sendEmailMessage(data: EmailSendDto): String
-
     fun verificationEmail(data: EmailVerificationDto): String
 }
