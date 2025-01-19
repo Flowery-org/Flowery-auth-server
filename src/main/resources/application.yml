@@ -17,7 +17,11 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
+<<<<<<< feature/somin
     username: example1234@gmail.com
+=======
+    ident: example1234@gmail.com
+>>>>>>> local
     password: example1234
     properties:
       mail:
