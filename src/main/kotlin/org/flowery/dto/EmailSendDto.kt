@@ -1,6 +1,6 @@
 package org.flowery.dto
 
 data class EmailSendDto(
-    val userName: String,
+    val ident: String,
     val userEmail: String
 )

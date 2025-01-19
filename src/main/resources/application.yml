@@ -4,7 +4,7 @@ spring:
   datasource:
     url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     driverClassName: org.h2.Driver
-    username: sa
+    ident: sa
     password:
   jpa:
     hibernate:
@@ -17,7 +17,7 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: hyu.flowery@gmail.com
+    ident: hyu.flowery@gmail.com
     password: qimvruvjyiyftcax
     properties:
       mail:
