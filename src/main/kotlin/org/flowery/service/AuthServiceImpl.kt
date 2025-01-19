@@ -31,13 +31,13 @@ class AuthServiceImpl(
      */
     override fun login(loginRequestDto: LoginRequestDto): Mono<LoginResponseDto> {
         // Redis에서 사용자 정보 조회
-        val user = redisTemplate.opsForHash<String, Any>().get("users", loginRequestDto.ident) as? User
+        val user = redisTemplate.opsForHash<String, Any>().get("users", loginRequestDto.username) as? User
 
         return if (user != null &&
             passwordEncoder.matches(loginRequestDto.password, user.passwordHash)
         ) {
-            val token = jwtProvider.createToken(user.ident, user.roles)
-            Mono.just(LoginResponseDto(token = token, ident = user.ident, roles = user.roles))
+            val token = jwtProvider.createToken(user.username, user.roles)
+            Mono.just(LoginResponseDto(token = token, username = user.username, roles = user.roles))
         } else {
             Mono.error(IllegalArgumentException("Invalid ident or password"))
         }

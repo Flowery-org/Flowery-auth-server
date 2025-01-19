@@ -36,7 +36,7 @@ class AuthenticationController(
             .map { response ->
                 // 세션 객체 생성
                 val session = request.getSession()
-                session.setAttribute("ident", response.ident)
+                session.setAttribute("userName", response.username)
                 session.setAttribute("roles", response.roles)   // 사용자 roles 저장
                 ResponseEntity.ok(response)
             }
