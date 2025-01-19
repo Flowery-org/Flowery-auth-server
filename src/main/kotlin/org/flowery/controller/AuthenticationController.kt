@@ -28,15 +28,15 @@ class AuthenticationController(
      * @param loginRequestDto 로그인 요청 DTO
      * @return 로그인 응답 DTO를 포함한 ResponseEntity
      *
-     * + serviceImpl에서 로그인 응답 받아올 경우 userName으로 Session 처리
+     * + serviceImpl에서 로그인 응답 받아올 경우 ident으로 Session 처리
      */
-    @PostMapping("/login")
+    @PostMapping("/user")
     fun login(@RequestBody @Validated loginRequestDto: LoginRequestDto, request: HttpServletRequest): Mono<ResponseEntity<LoginResponseDto>> {
         return authService.login(loginRequestDto)
             .map { response ->
                 // 세션 객체 생성
                 val session = request.getSession()
-                session.setAttribute("userName", response.username)
+                session.setAttribute("ident", response.ident)
                 session.setAttribute("roles", response.roles)   // 사용자 roles 저장
                 ResponseEntity.ok(response)
             }
