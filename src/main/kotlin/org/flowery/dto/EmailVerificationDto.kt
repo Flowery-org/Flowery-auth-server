@@ -2,5 +2,5 @@ package org.flowery.dto
 
 data class EmailVerificationDto(
     val userEmail: String,
-    val userCode: String,
+    val userCode: String
 )
