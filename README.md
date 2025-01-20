@@ -15,6 +15,7 @@
 ```json
 {
   ident: String,
+  password: String,
   userName: String
 }
 ```
@@ -54,7 +55,7 @@
 ```json
 {
   ident: String,
-  userEmail: String
+  userName: String
 }
 ```
 
@@ -69,7 +70,7 @@
 **요청 본문:**
 ```json
 {
-  userEmail: String,
+  ident: String,
   userCode: String
 }
 ```
