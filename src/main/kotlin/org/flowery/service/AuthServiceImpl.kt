@@ -67,14 +67,14 @@ class AuthServiceImpl(
         }
     }
 
-    /*
+    /**
     * SMTP 이메일 전송
     *
     * 랜덤 6자리 숫자 인증 코드 생성 후 인증 코드 저장
     *
     * 유저가 작성한 이메일로 인증코드 전송
     *
-    * */
+    */
     override fun sendEmailMessage(data: EmailSendDto): String {
         return try {
             val randNum = (100000..999999).random().toString()
@@ -96,12 +96,12 @@ class AuthServiceImpl(
         }
     }
 
-    /*
+    /**
     * 이메일 인증코드 인증 및 인증 코드 삭제
     *
     * email을 사용해 redis에 저장된 서버에서 보낸 인증 코드와 유저가 입력한 인증 코드의 비교
     *
-    * */
+    */
     override fun verificationEmail(data: EmailVerificationDto): String {
         val savedCode = authRepository.getAuthCode(data.userEmail) // redis에서 인증코드 조회
 
@@ -117,11 +117,11 @@ class AuthServiceImpl(
 
     }
 
-    /*
+    /**
     * 로그아웃 시 토큰을 블랙리스트에 올리기
     *
     * (JWTProvider에서 블랙리스트에 토큰을 추가)
-    * */
+    */
     fun logout(token: String){
         val remainingMills = 3600000L // 1시간 후 만료
         jwtProvider.addToBlacklist(token, remainingMills)
