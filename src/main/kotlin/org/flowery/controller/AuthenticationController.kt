@@ -63,15 +63,15 @@ class AuthenticationController(
     */
     @PostMapping("/emails")
     @ResponseBody
-    fun endEmail(@RequestBody emailSendDto: EmailSendDto): String {
+    fun endEmail(@RequestBody @Validated emailSendDto: EmailSendDto): String {
         return authService.sendEmailMessage(emailSendDto)
     }
 
     /**
-        이메일 인증
-
-        @param emailVerificationDto 인증 코드 검증 DTO
-        @return 인증 코드 검증 결과 응답
+     * 이메일 인증 코드 검증
+     *
+     * @param emailVerificationDto 이메일 인증 코드 검증 DTO
+     * @return 이메일 인증 코드 검증 결과 응답
     */
     @PostMapping("/verifications")
     fun verifyCode(@RequestBody emailVerificationDto: EmailVerificationDto): String {
