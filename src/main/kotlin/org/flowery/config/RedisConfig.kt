@@ -1,6 +1,9 @@
 package org.flowery.config
 
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.TypeAdapter
+import com.google.gson.stream.JsonReader
+import com.google.gson.stream.JsonWriter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.connection.RedisConnectionFactory
@@ -9,6 +12,7 @@ import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.serializer.RedisSerializer
 import org.springframework.data.redis.serializer.StringRedisSerializer
 import java.nio.charset.Charset
+import java.time.LocalDateTime
 
 
 @Configuration
@@ -25,44 +29,44 @@ class RedisConfig {
         return LettuceConnectionFactory("localhost", 6379)
     }
 
+
     /**
-     * Gson을 사용하여 객체를 JSON으로 직렬화/역직렬화하는 RedisSerializer Bean
-     *
-     * @return RedisSerializer<Any> - Gson 기반의 커스텀 Redis 직렬화
+     * LocalDateTime을 위한 커스텀 TypeAdapter
      */
+    private class LocalDateTimeAdapter : TypeAdapter<LocalDateTime>() {
+        override fun write(out: JsonWriter, value: LocalDateTime?) {
+            if (value == null) {
+                out.nullValue()
+            } else {
+                out.value(value.toString())
+            }
+        }
+
+        override fun read(input: JsonReader): LocalDateTime? {
+            val value = input.nextString()
+            return if (value == null) null else LocalDateTime.parse(value)
+        }
+    }
+
     @Bean
     fun gsonRedisSerializer(): RedisSerializer<Any> {
         return object : RedisSerializer<Any> {
-            private val gson = Gson()
+            private val gson = GsonBuilder()
+                .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeAdapter())
+                .create()
 
-            /**
-             * 객체를 JSON 문자열로 변환 후 바이트 배열로 직렬화
-             *
-             * @param source 직렬화할 객체
-             * @return ByteArray 직렬화된 바이트 배열
-             */
             override fun serialize(source: Any?): ByteArray {
                 return if (source == null) {
-                    // null인 경우 빈 바이트 배열 반환
                     ByteArray(0)
                 } else {
-                    // 객체를 JSON 문자열로 변환 후 UTF-8 인코딩된 바이트 배열로 변환
                     gson.toJson(source).toByteArray(Charset.forName("UTF-8"))
                 }
             }
 
-            /**
-             * 바이트 배열을 JSON 문자열로 변환 후 객체로 역직렬화
-             *
-             * @param bytes 역직렬화할 바이트 배열
-             * @return Any? 역직렬화된 객체
-             */
             override fun deserialize(bytes: ByteArray?): Any? {
                 return if (bytes == null || bytes.isEmpty()) {
-                    // 바이트 배열이 null이거나 비어있으면 null 반환
                     null
                 } else {
-                    // 바이트 배열을 UTF-8 문자열로 변환 후 객체로 역직렬화
                     val str = String(bytes, Charset.forName("UTF-8"))
                     gson.fromJson(str, Any::class.java)
                 }
