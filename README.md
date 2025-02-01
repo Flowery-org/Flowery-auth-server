@@ -9,7 +9,7 @@
 ### 1. 회원가입
 신규 사용자 계정을 생성합니다.
 
-**URL:** `POST /users`
+**URL:** `POST /api/auth/users`
 
 **요청 본문:**
 ```json
@@ -31,7 +31,7 @@
 ### 2. 로그인
 사용자 인증 후 액세스 토큰을 발급합니다.
 
-**URL:** `POST /`
+**URL:** `POST /api/auth`
 
 **요청 본문:**
 ```json
@@ -50,7 +50,7 @@
 ### 3. 이메일 인증코드 전송
 이메일로 인증 코드를 전송합니다.
 
-**URL:** `POST /emails`
+**URL:** `POST /api/auth/emails`
 
 **요청 본문:**
 ```json
@@ -66,7 +66,7 @@
 ### 4. 이메일 인증코드 확인
 전송된 이메일 인증 코드를 검증합니다.
 
-**URL:** `POST /verifications`
+**URL:** `POST /api/auth/verifications`
 
 **요청 본문:**
 ```json
