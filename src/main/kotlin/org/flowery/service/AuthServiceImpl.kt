@@ -27,6 +27,10 @@ class AuthServiceImpl(
         log.info("회원가입 프로세스 시작: ident={}, email={}", signUpRequestDto.ident, signUpRequestDto.userEmail)
 
         return try {
+            if (redisTemplate.opsForHash<String, Any>().hasKey("users", signUpRequestDto.ident)) {
+                return Mono.error(IllegalStateException("이미 존재하는 아이디입니다"))
+            }
+
             validatePassword(signUpRequestDto.password)
             log.debug("비밀번호 유효성 검사 완료: ident={}", signUpRequestDto.ident)
 
