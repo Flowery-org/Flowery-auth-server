@@ -31,6 +31,10 @@ class AuthServiceImpl(
                 return Mono.error(IllegalStateException("이미 존재하는 아이디입니다"))
             }
 
+            if(redisTemplate.opsForHash<String, Any>().hasKey("users", signUpRequestDto.userEmail)){
+                return Mono.error(IllegalStateException("이미 존재하는 이메일입니다"))
+            }
+
             validatePassword(signUpRequestDto.password)
             log.debug("비밀번호 유효성 검사 완료: ident={}", signUpRequestDto.ident)
 
@@ -111,13 +115,6 @@ class AuthServiceImpl(
                 "Verification failed: Invalid code."
             }
         }
-    }
-
-    fun logout(token: String) {
-        log.info("로그아웃 처리 시작")
-        val remainingMills = 3600000L
-        jwtProvider.addToBlacklist(token, remainingMills)
-        log.info("토큰 블랙리스트 추가 완료")
     }
 
     private fun validatePassword(password: String) {
