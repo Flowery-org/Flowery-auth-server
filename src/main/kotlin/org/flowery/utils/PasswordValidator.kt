@@ -13,20 +13,22 @@ class PasswordValidator {
         fun validate(password: String): ValidationResult {
             val errors = mutableListOf<String>()
 
+            // 1) 비밀번호 길이 확인
             if (!password.matches(LENGTH_PATTERN)) {
-                errors.add("Password must be between 8 and 20 characters")
+                errors.add("비밀번호는 8자 이상 20자 이하이어야 합니다.")
             }
-            if (!password.matches(UPPERCASE_PATTERN)) {
-                errors.add("Password must contain at least one uppercase letter")
-            }
-            if (!password.matches(LOWERCASE_PATTERN)) {
-                errors.add("Password must contain at least one lowercase letter")
-            }
-            if (!password.matches(NUMBER_PATTERN)) {
-                errors.add("Password must contain at least one number")
-            }
-            if (!password.matches(SPECIAL_CHAR_PATTERN)) {
-                errors.add("Password must contain at least one special character")
+
+            // 2) 각 패턴별로 매칭되는 개수 확인
+            val matchCount = listOf(
+                UPPERCASE_PATTERN,
+                LOWERCASE_PATTERN,
+                NUMBER_PATTERN,
+                SPECIAL_CHAR_PATTERN
+            ).count { regex -> password.matches(regex) }
+
+            // 3) 대문자/소문자/숫자/특수문자 중 2종류 이상 만족하는지 확인
+            if (matchCount < 2) {
+                errors.add("비밀번호는 대문자, 소문자, 숫자, 특수문자 중 최소 2종류 이상 포함해야 합니다.")
             }
 
             return ValidationResult(
